@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ritmik Sayma (iOS Standalone)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGUlEQVR4nO3BMQEAAADCIPunNscwYAAAAAAAAABwqQ2lAAE2Pp2TAAAAAElFTkSuQmCC">
+<style>
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0f172a;color:#e5e7eb}
+  /* Buraya mobile-first stilin kısa hali gelebilir; PWA index.html ile aynı bileşenler */
+  .wrap{max-width:840px;margin:0 auto;padding:env(safe-area-inset-top) 12px 24px}
+  h1{font-size:22px}
+  input,select{background:#0b1220;border:1px solid rgba(255,255,255,.1);color:#e5e7eb;border-radius:12px;padding:10px 12px;font-size:16px}
+  .row{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media(max-width:420px){.row{grid-template-columns:1fr}}
+  .display{margin-top:12px;display:flex;align-items:center;justify-content:center;min-height:200px;border:1px solid rgba(255,255,255,.06);border-radius:14px}
+  .big{font-size:64px;font-weight:900}
+  .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧮 Ritmik Sayma (iOS)</h1>
+  <div class="row">
+    <label>Başlangıç <input id="start" type="number" inputmode="numeric" value="0"></label>
+    <label>Adım <input id="step" type="number" inputmode="numeric" min="1" value="2"></label>
+    <label>Uzunluk <input id="count" type="number" inputmode="numeric" min="1" max="200" value="20"></label>
+    <label>Yön
+      <select id="direction"><option value="up">Artan</option><option value="down">Azalan</option></select>
+    </label>
+  </div>
+  <div class="display"><div id="num" class="big">Hazır</div></div>
+  <div style="display:flex;gap:8px;margin-top:10px;">
+    <button class="btn" id="prev">⟵</button>
+    <button class="btn" id="next">⟶</button>
+  </div>
+  <p>İpucu: Safari paylaş → <b>Ana Ekrana Ekle</b> ile tam ekran kullan.</p>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const start=$('start'), step=$('step'), count=$('count'), direction=$('direction'), num=$('num');
+  let seq=[], idx=0;
+  function gen(){
+    const s=+start.value||0, st=Math.max(1,+step.value||1), c=Math.min(200,Math.max(1,+count.value||1)), dir=direction.value;
+    seq=Array.from({length:c},(_,i)=>dir==='up'?s+i*st:s-i*st); idx=0; draw();
+  }
+  function draw(){ num.textContent = seq.length? String(seq[idx]) : 'Hazır'; }
+  $('prev').addEventListener('click',()=>{ if(!seq.length) return; idx=Math.max(0,idx-1); draw(); });
+  $('next').addEventListener('click',()=>{ if(!seq.length) return; idx=Math.min(seq.length-1,idx+1); draw(); });
+  ;[start,step,count,direction].forEach(x=> x.addEventListener('input', gen));
+  gen();
+})();
+</script>
+</body>
+</html>
